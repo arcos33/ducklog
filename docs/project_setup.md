@@ -13,10 +13,11 @@ DuckLog is a SwiftUI-based journaling application designed to help developers qu
 
 ## Project Structure
 
-- **Shared**: Common logic, views, and models
-- **macOS**: Mac-specific entry point and any platform-unique views or behavior
-- **iPadOS (future)**: To be added when needed
-- App targets can be managed via the Xcode project navigator and `DuckLogApp.swift` files per platform
+- **Views**: UI components including TimelineView, SummaryView, SettingsView
+- **ViewModels**: Business logic for Journal and Settings
+- **Models**: Data structures for JournalEntry, SettingsModel
+- **Services**: Data persistence and settings management
+- **Assets**: App resources and icons
 
 ## Current Development Focus
 
@@ -25,17 +26,18 @@ DuckLog is a SwiftUI-based journaling application designed to help developers qu
 - GitHub PR linking
 - Customizable summary templates via Settings view
 - Timeline views for filtering recent entries
+- Summary view with template-based organization
 
 ## Technologies and APIs Used
 
 - **SwiftUI**: Declarative UI framework used for building app interface
-- **Markdown**: Entries are saved as markdown files locally
+- **SwiftData**: Persistent storage for journal entries
+- **UserDefaults**: Local storage for app settings
 - **GitHub API (planned)**: To fetch PR information, descriptions, and statuses
-- **LocalStorage**: To manage user settings like summary templates
-- **Drag-and-Drop (planned)**: For reordering sections in the template settings
-- **AI Summary (planned)**: Future integration for automated weekly summaries
+- **NavigationSplitView**: For 3-column layout on macOS
 
 ## Notes
 
 - This project is set up with future expansion in mind, but users and features are currently focused on a great macOS experience.
 - Code is organized to allow easy scaling and platform adaptation down the road.
+- Uses SwiftData for persistence instead of Core Data

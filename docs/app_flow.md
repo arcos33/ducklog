@@ -10,7 +10,7 @@
     - Filter by PR status: "In Progress", "Done"
     - Pull in PR title, description, and status
   - The **status** of the entry is selectable
-- Entry is saved to a local **markdown file**
+- Entry is saved using SwiftData
 
 ## 2. Weekly and Timeline Views
 
@@ -30,12 +30,14 @@
   - Team Collaboration
 - Template is applied globally to all summaries
 - Optional **drag-and-drop reordering** of sections
-- UI is designed to support **future addition of multiple templates**, but currently only one template is supported
+- UI supports one template with customizable sections
 
-## 4. Planned Feature: AI Summary
+## 4. Summary View
 
-- Summarizes entries using selected tags and summary structure
-- Could include insights from GitHub PRs or tagged patterns
+- Displays entries organized by template sections
+- Each section shows relevant entries based on tags
+- Includes entry content and linked PRs
+- Updates automatically based on selected time period
 
 ## 5. Settings View
 
