@@ -20,48 +20,31 @@ struct ContentView: View {
     
     var body: some View {
         NavigationSplitView {
-            VStack {
-                VStack {
-                    Button("This Week") {
-                        viewModel.filter = .thisWeek
-                    }
-                    Button("Last Week") {
-                        viewModel.filter = .lastWeek
-                    }
-                    Button("Two Weeks") {
-                        viewModel.filter = .twoWeeks
-                    }
-                    Button("Custom Range") {
-                        // Implement custom range selection
-                    }
-                }
-                .padding()
-                List {
-                    Section("Timeline") {
-                        ForEach(filteredEntries) { entry in
-                            TimelineEntryRow(entry: entry)
-                                .onTapGesture {
-                                    viewModel.selectedEntry = entry
-                                }
-                        }
-                    }
-                }
-                .navigationTitle("DuckLog")
-                .toolbar {
-                    ToolbarItem(placement: .primaryAction) {
-                        Button(action: { showingNewEntry = true }) {
-                            Label("New Entry", systemImage: "plus")
-                        }
+            // Sidebar
+            List {
+                Section(header: Text("Journal").font(.system(size: 20, weight: .bold))) {
+                    ForEach(filteredEntries) { entry in
+                        TimelineEntryRow(entry: entry)
+                            .onTapGesture {
+                                viewModel.selectedEntry = entry
+                            }
                     }
                 }
             }
-        } detail: {
+            .listStyle(SidebarListStyle())
+        } content: {
+            // Detail Column
             if let selectedEntry = viewModel.selectedEntry {
                 EntryDetailView(entry: selectedEntry)
             } else {
                 Text("Select an entry")
             }
+        } detail: {
+            // Supplementary Column
+            Text("Supplementary Content")
         }
+        .environment(\.colorScheme, .dark)
+        .accentColor(.blue)
         .sheet(isPresented: $showingNewEntry) {
             NewEntryView()
         }
@@ -78,9 +61,9 @@ struct TimelineEntryRow: View {
     var body: some View {
         VStack(alignment: .leading) {
             Text(entry.title)
-                .font(.headline)
+                .font(.system(size: 18, weight: .bold))
             Text(entry.content)
-                .font(.body)
+                .font(.system(size: 16, weight: .regular))
                 .lineLimit(2)
             if let pr = entry.linkedPR {
                 HStack {
