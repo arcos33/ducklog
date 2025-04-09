@@ -7,6 +7,8 @@ struct EntryDetailView: View {
         Group {
             if let entry = entry {
                 VStack(alignment: .leading, spacing: 8) {
+                    Text(entry.title)
+                        .font(.headline)
                     Text(formattedTime(entry.timestamp))
                         .font(.caption)
                         .foregroundColor(.gray)
@@ -28,4 +30,4 @@ struct EntryDetailView: View {
         formatter.dateFormat = "MMM d, h:mm a"
         return formatter.string(from: date)
     }
-} 
+}
