@@ -11,6 +11,7 @@ import SwiftData
 @main
 struct ducklogApp: App {
     var sharedModelContainer: ModelContainer = {
+
         let schema = Schema([
             JournalEntry.self,
             PullRequest.self,

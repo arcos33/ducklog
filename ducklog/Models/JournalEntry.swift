@@ -1,27 +1,6 @@
 import Foundation
 import SwiftData
 
-@objc(TagsTransformer)
-final class TagsTransformer: ValueTransformer {
-    override class func transformedValueClass() -> AnyClass {
-        return NSData.self
-    }
-
-    override class func allowsReverseTransformation() -> Bool {
-        return true
-    }
-
-    override func transformedValue(_ value: Any?) -> Any? {
-        guard let tags = value as? [String] else { return nil }
-        return try? JSONEncoder().encode(tags)
-    }
-
-    override func reverseTransformedValue(_ value: Any?) -> Any? {
-        guard let data = value as? Data else { return nil }
-        return try? JSONDecoder().decode([String].self, from: data)
-    }
-}
-
 enum EntryStatus: String, Codable, CaseIterable, Identifiable {
     case inProgress = "In Progress"
     case done = "Done"
@@ -34,7 +13,32 @@ enum EntryStatus: String, Codable, CaseIterable, Identifiable {
 final class JournalEntry {
     var title: String
     var content: String
-    @objc dynamic var tags: [String]
+    private var _tags: String?
+    var tags: [String] {
+        get {
+            guard let tagsString = _tags,
+                  let data = Data(base64Encoded: tagsString) else { 
+                print("📦 No tags data found")
+                return [] 
+            }
+            if let decodedTags = try? JSONDecoder().decode([String].self, from: data) {
+                print("📦 Decoded tags: \(decodedTags)")
+                return decodedTags
+            } else {
+                print("❌ Failed to decode tags from data")
+                return []
+            }
+        }
+        set {
+            if let data = try? JSONEncoder().encode(newValue) {
+                _tags = data.base64EncodedString()
+                print("📦 Encoded tags: \(newValue) -> \(_tags ?? "nil")")
+            } else {
+                print("❌ Failed to encode tags")
+                _tags = nil
+            }
+        }
+    }
     var status: EntryStatus
     var timestamp: Date
     var linkedPR: PullRequest?
@@ -49,13 +53,19 @@ final class JournalEntry {
     ) {
         self.title = title
         self.content = content
-        self.tags = tags
         self.status = status
         self.timestamp = timestamp
         self.linkedPR = linkedPR
         
-        // Register the transformer
-        ValueTransformer.setValueTransformer(TagsTransformer(), forName: NSValueTransformerName("TagsTransformer"))
+        // Initialize _tags after all other properties
+        if let data = try? JSONEncoder().encode(tags) {
+            self._tags = data.base64EncodedString()
+        } else {
+            self._tags = nil
+        }
+        
+        // Now it's safe to print
+        print("📦 Initialized entry with tags: \(tags) -> \(self._tags ?? "nil")")
     }
 }
 

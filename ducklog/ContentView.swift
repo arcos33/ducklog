@@ -10,8 +10,13 @@ import SwiftData
 
 struct ContentView: View {
     @State private var showingNewEntry = false
-    @Query private var entries: [JournalEntry]
+    @Query(sort: \JournalEntry.timestamp, order: .reverse) private var entries: [JournalEntry]
     @StateObject private var viewModel = JournalViewModel()
+    @Environment(\.modelContext) private var modelContext
+    
+    var filteredEntries: [JournalEntry] {
+        entries.filter { $0.timestamp >= viewModel.filter.startDate && $0.timestamp <= viewModel.filter.endDate }
+    }
     
     var body: some View {
         NavigationSplitView {
@@ -33,7 +38,7 @@ struct ContentView: View {
                 .padding()
                 List {
                     Section("Timeline") {
-                        ForEach(viewModel.filteredEntries) { entry in
+                        ForEach(filteredEntries) { entry in
                             TimelineEntryRow(entry: entry)
                                 .onTapGesture {
                                     viewModel.selectedEntry = entry
@@ -59,6 +64,10 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showingNewEntry) {
             NewEntryView()
+        }
+        .onAppear {
+            print("📱 ContentView appeared, loading entries")
+            viewModel.loadEntries(modelContext: modelContext)
         }
     }
 }

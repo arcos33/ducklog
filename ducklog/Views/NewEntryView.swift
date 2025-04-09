@@ -59,24 +59,26 @@ struct NewEntryView: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
-                        saveEntry()
+                        print("💾 Creating new entry with model context: \(modelContext)")
+                        let entry = JournalEntry(
+                            title: title,
+                            content: content,
+                            tags: Array(selectedTags),
+                            status: status
+                        )
+                        modelContext.insert(entry)
+                        do {
+                            try modelContext.save()
+                            print("✅ Entry saved successfully")
+                        } catch {
+                            print("❌ Error saving entry: \(error)")
+                        }
+                        dismiss()
                     }
                 }
             }
         }
         .frame(minWidth: 400, minHeight: 500)
-    }
-    
-    private func saveEntry() {
-        let entry = JournalEntry(
-            title: title,
-            content: content,
-            tags: Array(selectedTags),
-            status: status,
-            linkedPR: selectedPR
-        )
-        modelContext.insert(entry)
-        dismiss()
     }
 }
 

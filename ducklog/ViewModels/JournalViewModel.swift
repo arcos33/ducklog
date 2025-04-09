@@ -43,6 +43,7 @@ class JournalViewModel: ObservableObject {
     }
     
     func addEntry(title: String = "", content: String, tags: [String] = [], status: EntryStatus = .inProgress, modelContext: ModelContext) {
+        print("📝 Creating new entry with title: \(title), content: \(content), tags: \(tags)")
         let entry = JournalEntry(
             title: title,
             content: content,
@@ -51,25 +52,38 @@ class JournalViewModel: ObservableObject {
             timestamp: Date()
         )
         modelContext.insert(entry)
+        print("✅ Entry created with ID: \(entry.persistentModelID)")
+        
+        do {
+            try modelContext.save()
+            print("💾 Entry saved successfully")
+        } catch {
+            print("❌ Error saving entry: \(error)")
+        }
+        
         loadEntries(modelContext: modelContext)
     }
     
     func loadEntries(modelContext: ModelContext) {
+        print("🔄 Loading entries...")
         let descriptor = FetchDescriptor<JournalEntry>(
             sortBy: [SortDescriptor(\.timestamp, order: .reverse)]
         )
         
         do {
             entries = try modelContext.fetch(descriptor)
-            print("Loaded entries: \(entries.count)")
+            print("📚 Loaded \(entries.count) entries")
+            for entry in entries {
+                print("  - Entry: \(entry.title), ID: \(entry.persistentModelID), Tags: \(entry.tags)")
+            }
         } catch {
-            print("Error loading entries: \(error)")
+            print("❌ Error loading entries: \(error)")
         }
     }
     
     var filteredEntries: [JournalEntry] {
         let filtered = entries.filter { $0.timestamp >= filter.startDate && $0.timestamp <= filter.endDate }
-        print("Filtered entries: \(filtered.count)")
+        print("🔍 Filtered entries: \(filtered.count) (from \(filter.startDate) to \(filter.endDate))")
         return filtered
     }
 } 

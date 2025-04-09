@@ -70,6 +70,7 @@ struct JournalView: View {
                 }
             }
             .onAppear {
+                print("📱 JournalView appeared")
                 viewModel.loadEntries(modelContext: modelContext)
             }
         }
@@ -143,8 +144,14 @@ struct AddEntryView: View {
             }
             .navigationTitle("New Entry")
             .toolbar {
-                ToolbarItem(placement: .automatic) {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
+                        print("💾 Saving new entry with model context: \(modelContext)")
                         viewModel.addEntry(
                             title: title,
                             content: content,
