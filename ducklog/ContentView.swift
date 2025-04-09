@@ -41,7 +41,7 @@ struct ContentView: View {
             }
         } detail: {
             // Supplementary Column
-            Text("Supplementary Content")
+            SummaryView(entries: filteredEntries)
         }
         .environment(\.colorScheme, .dark)
         .accentColor(.blue)
