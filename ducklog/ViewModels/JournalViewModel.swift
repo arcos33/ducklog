@@ -2,11 +2,10 @@ import Foundation
 import SwiftData
 import Combine
 
-@Observable
-class JournalViewModel {
-    var entries: [JournalEntry] = []
-    var selectedEntry: JournalEntry?
-    var filter: TimeFilter = .thisWeek
+class JournalViewModel: ObservableObject {
+    @Published var entries: [JournalEntry] = []
+    @Published var selectedEntry: JournalEntry?
+    @Published var filter: TimeFilter = .thisWeek
     
     private var cancellables = Set<AnyCancellable>()
     

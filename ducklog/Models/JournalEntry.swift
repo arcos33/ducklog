@@ -54,6 +54,7 @@ final class JournalEntry {
         self.timestamp = timestamp
         self.linkedPR = linkedPR
         
+        // Register the transformer
         ValueTransformer.setValueTransformer(TagsTransformer(), forName: NSValueTransformerName("TagsTransformer"))
     }
 }
@@ -75,4 +76,4 @@ enum PRStatus: String, Codable {
     case inProgress = "In Progress"
     case done = "Done"
     case blocked = "Blocked"
-}
+} 

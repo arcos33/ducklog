@@ -14,6 +14,7 @@ struct ducklogApp: App {
         let schema = Schema([
             JournalEntry.self,
             PullRequest.self,
+            LogEntry.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 

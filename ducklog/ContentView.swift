@@ -16,7 +16,7 @@ struct ContentView: View {
     var body: some View {
         NavigationSplitView {
             VStack {
-                HStack {
+                VStack {
                     Button("This Week") {
                         viewModel.filter = .thisWeek
                     }

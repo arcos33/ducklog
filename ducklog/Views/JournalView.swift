@@ -3,7 +3,7 @@ import SwiftData
 
 struct JournalView: View {
     @Environment(\.modelContext) private var modelContext
-    @State private var viewModel = JournalViewModel()
+    @ObservedObject var viewModel: JournalViewModel
     @State private var showingAddEntry = false
     @State private var showingCustomRange = false
     @State private var customStartDate = Date()
@@ -51,7 +51,7 @@ struct JournalView: View {
             }
             .navigationTitle("Journal")
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .automatic) {
                     Button(action: { showingAddEntry = true }) {
                         Image(systemName: "plus")
                     }
@@ -90,7 +90,7 @@ struct CustomRangeView: View {
             }
             .navigationTitle("Custom Range")
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .automatic) {
                     Button("Done") {
                         onDismiss()
                         isPresented = false
@@ -143,7 +143,7 @@ struct AddEntryView: View {
             }
             .navigationTitle("New Entry")
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .automatic) {
                     Button("Save") {
                         viewModel.addEntry(
                             title: title,
@@ -157,37 +157,5 @@ struct AddEntryView: View {
                 }
             }
         }
-    }
-}
-
-struct EntryDetailView: View {
-    let entry: JournalEntry
-    
-    var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                Text(entry.title)
-                    .font(.title)
-                
-                Text(entry.content)
-                    .font(.body)
-                
-                HStack {
-                    ForEach(entry.tags, id: \.self) { tag in
-                        Text(tag)
-                            .font(.caption)
-                            .padding(4)
-                            .background(Color.blue.opacity(0.2))
-                            .cornerRadius(4)
-                    }
-                }
-                
-                Text(entry.timestamp, style: .date)
-                    .font(.caption)
-                    .foregroundColor(.gray)
-            }
-            .padding()
-        }
-        .navigationTitle("Entry Details")
     }
 } 
