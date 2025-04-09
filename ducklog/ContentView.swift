@@ -9,58 +9,87 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
-
+    @State private var showingNewEntry = false
+    @Query private var entries: [JournalEntry]
+    @StateObject private var viewModel = JournalViewModel()
+    
     var body: some View {
         NavigationSplitView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
+            VStack {
+                HStack {
+                    Button("This Week") {
+                        viewModel.filter = .thisWeek
+                    }
+                    Button("Last Week") {
+                        viewModel.filter = .lastWeek
+                    }
+                    Button("Two Weeks") {
+                        viewModel.filter = .twoWeeks
+                    }
+                    Button("Custom Range") {
+                        // Implement custom range selection
                     }
                 }
-                .onDelete(perform: deleteItems)
-            }
-#if os(macOS)
-            .navigationSplitViewColumnWidth(min: 180, ideal: 200)
-#endif
-            .toolbar {
-#if os(iOS)
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
+                .padding()
+                List {
+                    Section("Timeline") {
+                        ForEach(viewModel.filteredEntries) { entry in
+                            TimelineEntryRow(entry: entry)
+                                .onTapGesture {
+                                    viewModel.selectedEntry = entry
+                                }
+                        }
+                    }
                 }
-#endif
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
+                .navigationTitle("DuckLog")
+                .toolbar {
+                    ToolbarItem(placement: .primaryAction) {
+                        Button(action: { showingNewEntry = true }) {
+                            Label("New Entry", systemImage: "plus")
+                        }
                     }
                 }
             }
         } detail: {
-            Text("Select an item")
-        }
-    }
-
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
-        }
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
+            if let selectedEntry = viewModel.selectedEntry {
+                EntryDetailView(entry: selectedEntry)
+            } else {
+                Text("Select an entry")
             }
         }
+        .sheet(isPresented: $showingNewEntry) {
+            NewEntryView()
+        }
+    }
+}
+
+struct TimelineEntryRow: View {
+    let entry: JournalEntry
+    
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text(entry.title)
+                .font(.headline)
+            Text(entry.content)
+                .font(.body)
+                .lineLimit(2)
+            if let pr = entry.linkedPR {
+                HStack {
+                    Image(systemName: "link")
+                    Text(pr.title)
+                }
+                .font(.caption)
+                .foregroundColor(.secondary)
+            }
+            Text(entry.timestamp, style: .date)
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .padding(.vertical, 4)
     }
 }
 
 #Preview {
     ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
+        .modelContainer(for: JournalEntry.self, inMemory: true)
 }

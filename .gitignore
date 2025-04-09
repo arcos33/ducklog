@@ -1,0 +1,14 @@
+# Xcode
+.DS_Store
+xcuserdata/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+timeline.xctimeline
+playground.xcworkspace
+.build/
+Pods/
+Carthage/Build/
+.cursorignore
+cursor_prompt.txt

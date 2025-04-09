@@ -12,7 +12,8 @@ import SwiftData
 struct ducklogApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Item.self,
+            JournalEntry.self,
+            PullRequest.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
