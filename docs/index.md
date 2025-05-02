@@ -2,6 +2,7 @@
 
 ## Features
 - [Journal List View](features/journal-list-view.md) - Timeline-based journal entry visualization
+- [Jira Integration](features/jira-integration.md) - Import Jira tickets into journal entries
 - Entry Management
 - Tag System
 - Search and Filtering
@@ -56,5 +57,6 @@ Below is an overview of the documentation files available:
 - [Settings_Structure.md](./Settings_Structure.md) – Global settings and customization
 - [Integration_Plan.md](./Integration_Plan.md) – Planned API and service integrations
 - [Layout Design](layout_design.md)
+- [Jira Integration Flow](flow_diagrams/jira-integration-flow.md) - Detailed flow diagrams for Jira integration
 
 Use this index to get oriented or to help AI tools understand the structure and scope of the project.

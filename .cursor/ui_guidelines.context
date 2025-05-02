@@ -1,0 +1,85 @@
+# DuckLog UI Guidelines
+
+## Layout Structure
+The app follows a three-panel layout inspired by Day One:
+
+1. **Sidebar** (Left)
+   - Always visible on macOS
+   - Collapsible on iOS/iPad
+   - Contains navigation items for all main app areas
+
+2. **Entry List** (Middle)
+   - Shows chronological list of entries
+   - Grouped by month/year
+   - Full-width selection highlight
+   - Uses card-style UI
+
+3. **Detail/Editor Pane** (Right)
+   - Document-style layout with generous margins (128pt)
+   - Clear header with date/time and status
+   - Markdown rendering in view mode
+   - Full editing capabilities in edit mode
+
+## Platform-Specific Adaptations
+
+### macOS
+- Three columns always visible
+- Proper window controls and menu integration
+- Keyboard shortcut support
+- Mouse-optimized UI
+
+### iPad
+- Adaptive layout with collapsible panels
+- Touch-optimized controls
+- Support for Split View
+
+### iOS
+- Stack-based navigation
+- Modal presentations for detail views
+- Full-screen interfaces
+
+## Style Guidelines
+
+1. **Typography**
+   - System fonts for native feel
+   - Proper hierarchy:
+     - `.title` for main headers
+     - `.headline` for section headers
+     - `.body` for content
+     - `.caption` for metadata
+
+2. **Colors**
+   - Status colors:
+     - In Progress: Blue
+     - Done: Green
+     - Blocked: Red
+   - Platform-appropriate backgrounds
+   - Good contrast ratios
+
+3. **Spacing**
+   - Consistent padding (16pt base unit)
+   - Adequate whitespace between sections
+   - Proper content margins
+
+4. **Controls**
+   - Platform-native controls
+   - Clear, descriptive labels
+   - Consistent button styles
+
+## Entry Card Design
+
+```
++--------------------------------------+
+| Title                         Status |
+| Preview text...                      |
+| Tags: Tag1, Tag2        Date & Time |
++--------------------------------------+
+```
+
+## Component Best Practices
+
+1. **Use built-in SwiftUI components** when possible
+2. **Extract reusable views** for common patterns
+3. **Implement dark mode support** for all components
+4. **Use ViewBuilder** for composition and flexibility
+5. **Follow platform conventions** for each target OS 

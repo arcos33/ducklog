@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 #if os(iOS)
 import UIKit
 #elseif os(macOS)
@@ -8,6 +9,7 @@ import AppKit
 struct EntryListView: View {
     @ObservedObject var viewModel: JournalViewModel
     @Binding var selectedEntry: JournalEntry?
+    @Environment(\.modelContext) private var modelContext
     
     private var groupedEntries: [(String, [(Date, [JournalEntry])])] {
         // First group by month/year
@@ -36,7 +38,7 @@ struct EntryListView: View {
                     .textCase(nil)
                 ) {
                     ForEach(dayGroups, id: \.0) { (dayDate, entries) in
-                        StackedCardsView(entries: entries.sorted(by: { $0.timestamp > $1.timestamp }), selectedEntry: $selectedEntry)
+                        StackedCardsView(entries: entries.sorted(by: { $0.timestamp > $1.timestamp }), selectedEntry: $selectedEntry, viewModel: viewModel)
                             .listRowSeparator(.hidden)
                     }
                 }
@@ -56,7 +58,9 @@ struct EntryListView: View {
 struct StackedCardsView: View {
     let entries: [JournalEntry]
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.modelContext) private var modelContext
     @Binding var selectedEntry: JournalEntry?
+    var viewModel: JournalViewModel
     
     private var cardBackgroundColor: Color {
         #if os(iOS)
@@ -90,73 +94,126 @@ struct StackedCardsView: View {
             // Entries
             VStack(spacing: 12) {
                 ForEach(entries) { entry in
-                    VStack(alignment: .leading, spacing: 6) {
-                        HStack {
-                            Text(formatTime(entry.timestamp))
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                            Spacer()
-                            Text(entry.status.rawValue)
-                                .font(.caption)
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 2)
-                                .background(statusColor(for: entry.status).opacity(0.1))
-                                .foregroundColor(statusColor(for: entry.status))
-                                .cornerRadius(4)
-                        }
-                        
-                        if let title = entry.content.components(separatedBy: .newlines).first?.trimmingCharacters(in: .whitespaces),
-                           !title.isEmpty {
-                            Text(title)
-                                .font(.headline)
-                                .lineLimit(1)
-                        }
-                        
-                        let contentPreview = entry.content
-                            .components(separatedBy: .newlines)
-                            .dropFirst()
-                            .joined(separator: " ")
-                            .trimmingCharacters(in: .whitespaces)
-                        
-                        if !contentPreview.isEmpty {
-                            Text(contentPreview)
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                                .lineLimit(2)
-                        }
-                        
-                        if !entry.tags.isEmpty {
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: 4) {
-                                    ForEach(entry.tags.prefix(3), id: \.self) { tag in
-                                        Text(tag)
-                                            .font(.caption)
-                                            .padding(.horizontal, 6)
-                                            .padding(.vertical, 2)
-                                            .background(Color.accentColor.opacity(0.1))
-                                            .foregroundColor(.accentColor)
-                                            .cornerRadius(4)
-                                    }
-                                    if entry.tags.count > 3 {
-                                        Text("+\(entry.tags.count - 3)")
-                                            .font(.caption)
-                                            .foregroundColor(.secondary)
-                                    }
-                                }
+                    EntryCardView(entry: entry, selectedEntry: $selectedEntry)
+                        .swipeActions(edge: .trailing) {
+                            Button(role: .destructive) {
+                                viewModel.deleteEntry(entry: entry, modelContext: modelContext)
+                            } label: {
+                                Label("Delete", systemImage: "trash")
                             }
                         }
-                    }
-                    .padding()
-                    .background(cardBackgroundColor)
-                    .cornerRadius(8)
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        selectedEntry = entry
-                    }
+                        #if os(macOS)
+                        .contextMenu {
+                            Button(role: .destructive) {
+                                viewModel.deleteEntry(entry: entry, modelContext: modelContext)
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                        }
+                        #endif
                 }
             }
         }
         .padding(.vertical, 8)
+    }
+    
+    private func formatTime(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "h:mm a"
+        return formatter.string(from: date)
+    }
+    
+    private func statusColor(for status: EntryStatus) -> Color {
+        switch status {
+        case .done:
+            return .green
+        case .inProgress:
+            return .blue
+        case .blocked:
+            return .red
+        }
+    }
+}
+
+struct EntryCardView: View {
+    let entry: JournalEntry
+    @Binding var selectedEntry: JournalEntry?
+    @Environment(\.colorScheme) private var colorScheme
+    
+    private var cardBackgroundColor: Color {
+        #if os(iOS)
+        return colorScheme == .dark ? Color(UIColor.systemGray6) : Color(UIColor.systemGray6).opacity(0.3)
+        #elseif os(macOS)
+        return colorScheme == .dark ? Color(NSColor.gridColor) : Color(NSColor.gridColor).opacity(0.15)
+        #else
+        return colorScheme == .dark ? Color.gray.opacity(0.2) : Color.gray.opacity(0.1)
+        #endif
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack {
+                Text(formatTime(entry.timestamp))
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                Spacer()
+                Text(entry.status.rawValue)
+                    .font(.caption)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(statusColor(for: entry.status).opacity(0.1))
+                    .foregroundColor(statusColor(for: entry.status))
+                    .cornerRadius(4)
+            }
+            
+            if let title = entry.content.components(separatedBy: .newlines).first?.trimmingCharacters(in: .whitespaces),
+               !title.isEmpty {
+                Text(title)
+                    .font(.headline)
+                    .lineLimit(1)
+            }
+            
+            let contentPreview = entry.content
+                .components(separatedBy: .newlines)
+                .dropFirst()
+                .joined(separator: " ")
+                .trimmingCharacters(in: .whitespaces)
+            
+            if !contentPreview.isEmpty {
+                Text(contentPreview)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .lineLimit(2)
+            }
+            
+            if !entry.tags.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 4) {
+                        ForEach(entry.tags.prefix(3), id: \.self) { tag in
+                            Text(tag)
+                                .font(.caption)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(Color.accentColor.opacity(0.1))
+                                .foregroundColor(.accentColor)
+                                .cornerRadius(4)
+                        }
+                        if entry.tags.count > 3 {
+                            Text("+\(entry.tags.count - 3)")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                }
+            }
+        }
+        .padding()
+        .background(cardBackgroundColor)
+        .cornerRadius(8)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            selectedEntry = entry
+        }
     }
     
     private func formatTime(_ date: Date) -> String {

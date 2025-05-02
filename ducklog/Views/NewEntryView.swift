@@ -6,10 +6,12 @@ struct NewEntryView: View {
     @Environment(\.dismiss) private var dismiss
     
     @ObservedObject var viewModel: JournalViewModel
+    @EnvironmentObject private var settingsViewModel: SettingsViewModel
     @State private var content = ""
     @State private var selectedTags: Set<String> = []
     @State private var selectedPR: PullRequest?
     @State private var status: EntryStatus = .inProgress
+    @State private var showingJiraImport = false
     
     var body: some View {
         NavigationStack {
@@ -39,9 +41,29 @@ struct NewEntryView: View {
                     }
                 }
                 
-                Section("GitHub PR") {
-                    // TODO: Implement GitHub PR selection
-                    Text("PR Integration Coming Soon")
+                Section("Integrations") {
+                    Button(action: {
+                        showingJiraImport = true
+                    }) {
+                        HStack {
+                            Image(systemName: "link")
+                            Text("Import from Jira")
+                        }
+                    }
+                    
+                    Button(action: {
+                        // This will remain as a placeholder for future GitHub integration
+                    }) {
+                        HStack {
+                            Image(systemName: "link.badge.plus")
+                            Text("GitHub PR")
+                            Spacer()
+                            Text("Coming Soon")
+                                .foregroundColor(.secondary)
+                                .font(.caption)
+                        }
+                    }
+                    .disabled(true)
                 }
                 
                 Section("Status") {
@@ -72,6 +94,10 @@ struct NewEntryView: View {
                     }
                 }
             }
+            .sheet(isPresented: $showingJiraImport) {
+                JiraTicketImportView(viewModel: viewModel)
+                    .environmentObject(settingsViewModel)
+            }
         }
         .frame(minWidth: 400, minHeight: 500)
     }
@@ -79,5 +105,6 @@ struct NewEntryView: View {
 
 #Preview {
     NewEntryView(viewModel: JournalViewModel())
+        .environmentObject(SettingsViewModel())
         .modelContainer(for: JournalEntry.self, inMemory: true)
 } 

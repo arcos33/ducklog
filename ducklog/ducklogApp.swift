@@ -10,8 +10,10 @@ import SwiftData
 
 @main
 struct ducklogApp: App {
+    @State private var showSettings = false
+    @StateObject private var settingsViewModel = SettingsViewModel()
+    
     var sharedModelContainer: ModelContainer = {
-
         let schema = Schema([
             JournalEntry.self,
             PullRequest.self,
@@ -30,6 +32,27 @@ struct ducklogApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(settingsViewModel)
+                .sheet(isPresented: $showSettings) {
+                    #if os(macOS)
+                    SettingsView()
+                        .environmentObject(settingsViewModel)
+                        .frame(width: 600, height: 500)
+                    #else
+                    NavigationStack {
+                        SettingsView()
+                            .environmentObject(settingsViewModel)
+                    }
+                    #endif
+                }
+        }
+        .commands {
+            CommandGroup(replacing: .appSettings) {
+                Button("Settings...") {
+                    showSettings.toggle()
+                }
+                .keyboardShortcut(",", modifiers: .command)
+            }
         }
         .modelContainer(sharedModelContainer)
     }

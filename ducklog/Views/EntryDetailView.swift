@@ -90,12 +90,49 @@ struct MarkdownText: View {
                 var inItalic = false
                 var inCode = false
                 var inStrikethrough = false
+                var inLinkText = false
+                var inLinkURL = false
+                var linkText = ""
                 
                 var chars = Array(line)
                 var i = 0
                 
                 while i < chars.count {
-                    if i < chars.count - 1 {
+                    // Check for Markdown link format: [text](url)
+                    if chars[i] == "[" && !inLinkText && !inLinkURL {
+                        if !currentText.isEmpty {
+                            result.append((currentText, currentStyle))
+                            currentText = ""
+                        }
+                        inLinkText = true
+                        i += 1
+                        continue
+                    }
+                    
+                    if chars[i] == "]" && inLinkText && i + 1 < chars.count && chars[i + 1] == "(" {
+                        linkText = currentText
+                        currentText = ""
+                        inLinkText = false
+                        inLinkURL = true
+                        i += 2 // Skip the '](' characters
+                        continue
+                    }
+                    
+                    if inLinkURL && chars[i] == ")" {
+                        inLinkURL = false
+                        if let url = URL(string: currentText) {
+                            result.append((linkText, .link(url)))
+                        } else {
+                            // If URL is invalid, just add as plain text
+                            result.append(("[\(linkText)](\(currentText))", .body))
+                        }
+                        currentText = ""
+                        linkText = ""
+                        i += 1
+                        continue
+                    }
+                    
+                    if i < chars.count - 1 && !inLinkText && !inLinkURL {
                         // Bold
                         if chars[i] == "*" && chars[i + 1] == "*" {
                             if !currentText.isEmpty {
@@ -108,18 +145,6 @@ struct MarkdownText: View {
                             continue
                         }
                         
-                        // Italic
-                        if chars[i] == "_" {
-                            if !currentText.isEmpty {
-                                result.append((currentText, currentStyle))
-                                currentText = ""
-                            }
-                            inItalic.toggle()
-                            currentStyle = inItalic ? .italic : .body
-                            i += 1
-                            continue
-                        }
-                        
                         // Strikethrough
                         if chars[i] == "~" && chars[i + 1] == "~" {
                             if !currentText.isEmpty {
@@ -129,6 +154,20 @@ struct MarkdownText: View {
                             inStrikethrough.toggle()
                             currentStyle = inStrikethrough ? .strikethrough : .body
                             i += 2
+                            continue
+                        }
+                    }
+                    
+                    if !inLinkText && !inLinkURL {
+                        // Italic
+                        if chars[i] == "_" {
+                            if !currentText.isEmpty {
+                                result.append((currentText, currentStyle))
+                                currentText = ""
+                            }
+                            inItalic.toggle()
+                            currentStyle = inItalic ? .italic : .body
+                            i += 1
                             continue
                         }
                         
@@ -242,6 +281,9 @@ struct MarkdownText: View {
                         .background(colorScheme == .dark ? Color.secondary.opacity(0.2) : Color.secondary.opacity(0.1))
                         .foregroundColor(.primary)
                         .cornerRadius(4)
+                case .link(let url):
+                    Link(element.0, destination: url)
+                        .foregroundColor(.accentColor)
                 case .body:
                     Text(element.0)
                         .font(.body)
@@ -261,6 +303,7 @@ private enum MarkdownStyle {
     case bullet, numbered, quote
     case bold, italic, strikethrough, code
     case body, emptyLine
+    case link(URL)
 }
 
 // Date Info Component
@@ -574,9 +617,9 @@ struct EntryDetailView: View {
                     
                     // Tags
                     if !viewModel.allTags.isEmpty {
-                        VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: 8) {
                             Text("Tags")
-                                .font(.caption)
+                        .font(.caption)
                                 .foregroundColor(.secondary)
                             
                             ScrollView(.horizontal, showsIndicators: false) {

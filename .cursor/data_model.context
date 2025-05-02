@@ -1,0 +1,113 @@
+# DuckLog Data Model and Persistence
+
+## Core Models
+
+### JournalEntry
+```swift
+@Model
+class JournalEntry: Identifiable {
+    var id: UUID
+    var timestamp: Date
+    var title: String
+    var content: String
+    var tags: [String]
+    var status: String
+    var isTrashed: Bool = false
+    // Relationships
+    var linkedPR: GitHubPR?
+}
+```
+
+### GitHubPR
+```swift
+@Model
+class GitHubPR: Identifiable {
+    var id: String
+    var title: String
+    var description: String
+    var status: String
+    var url: URL
+}
+```
+
+### JiraTicket
+```swift
+struct JiraTicket {
+    var key: String
+    var title: String
+    var description: String
+    var status: String
+    var statusType: JiraStatusType
+    var url: URL
+}
+
+enum JiraStatusType {
+    case inProgress
+    case done
+    case blocked
+    case other
+    
+    var color: Color { ... }
+    var entryStatus: String { ... }
+}
+```
+
+### SettingsModel
+```swift
+struct SettingsModel {
+    var templateSections: [String]
+    var sectionOrder: [String]
+    var summaryTemplateEnabled: Bool
+    
+    // Jira settings
+    var jiraInstanceURL: String
+    var jiraUsername: String
+    var jiraAPIToken: String
+    var useMockJiraData: Bool
+}
+```
+
+## Persistence Strategy
+
+1. **SwiftData**
+   - Used for all core models (JournalEntry, GitHubPR)
+   - Handles relationships automatically
+   - Supports standard CRUD operations
+
+2. **UserDefaults**
+   - Used for app settings and preferences
+   - Stores non-sensitive configuration
+
+3. **Keychain** (for sensitive data)
+   - Stores API tokens and credentials securely
+   - Used for Jira authentication
+
+## Query Patterns
+
+1. **Journal Entries**
+   - Filter by date range: `entries.filter(#Predicate { $0.timestamp >= startDate && $0.timestamp <= endDate })`
+   - Filter by tags: `entries.filter(#Predicate { $0.tags.contains(tag) })`
+   - Filter by status: `entries.filter(#Predicate { $0.status == status })`
+   - Filter by trash status: `entries.filter(#Predicate { $0.isTrashed == false })`
+   - Sort by date: `entries.sort(by: { $0.timestamp > $1.timestamp })`
+
+2. **Data Relationships**
+   - One-to-one between JournalEntry and GitHubPR
+   - Many-to-many between JournalEntry and tags (represented as string array)
+
+## Best Practices
+
+1. **Model Updates**
+   - Use modelContext.insert() for new entries
+   - Changes to properties are automatically tracked
+   - Call modelContext.save() after batches of changes
+   - Handle errors appropriately
+
+2. **SwiftData Migration**
+   - Plan for schema evolution
+   - Use versioned schema when model changes
+   - Test migration paths
+
+3. **Mock Data**
+   - Provide mock implementations for testing
+   - Support offline mode where applicable 

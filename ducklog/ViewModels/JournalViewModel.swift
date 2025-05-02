@@ -189,4 +189,28 @@ class JournalViewModel: ObservableObject {
             print("ℹ️ No entries needed tag deletion.")
         }
     }
+    
+    func deleteEntry(entry: JournalEntry, modelContext: ModelContext) {
+        print("🗑️ Deleting entry: \(String(describing: entry.content.prefix(20)))...")
+        
+        // If this entry is currently selected, deselect it
+        if selectedEntry?.id == entry.id {
+            selectedEntry = nil
+        }
+        
+        // Option 1: Mark as trashed (soft delete)
+        entry.isTrashed = true
+        
+        // Option 2: Hard delete (uncomment to use)
+        // modelContext.delete(entry)
+        
+        do {
+            try modelContext.save()
+            print("✅ Entry deleted successfully")
+        } catch {
+            print("❌ Error deleting entry: \(error)")
+        }
+        
+        loadEntries(modelContext: modelContext)
+    }
 } 

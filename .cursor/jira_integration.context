@@ -1,0 +1,57 @@
+# Jira Integration Context
+
+## Overview
+The DuckLog app integrates with Jira to allow users to import tickets directly into journal entries. This context provides essential information about the implementation.
+
+## Key Components
+
+1. **JiraService**
+   - Handles all API communication
+   - Performs Basic Authentication with username and API token
+   - Supports URL or ticket ID lookup
+   - Includes network connectivity testing
+   - Provides mock data option for offline testing
+
+2. **JiraTicketImportView**
+   - UI for ticket lookup and import
+   - Platform-specific variations (Modal for macOS, full-screen for iOS)
+   - Preview of ticket details before import
+   - Error handling and troubleshooting tips
+
+3. **Data Flow**
+   - User input (URL/ID) → JiraService → Jira API → JiraTicket → JournalEntry
+   - Secure authentication handling
+
+4. **Entry Format**
+   ```markdown
+   # [Ticket Title]
+   
+   ### Ticket#: [Ticket Key]
+   ### Status: [Ticket Status]
+   
+   ---
+   
+   This entry was auto-generated from Jira ticket [Ticket Key](Ticket URL)
+   ```
+
+## Implementation Guidelines
+
+1. **Authentication**
+   - Always use Basic Authentication with email and API token
+   - Never store or transmit plain passwords
+   - Encode credentials properly for HTTP headers
+
+2. **Error Handling**
+   - Provide clear error messages
+   - Include troubleshooting tips for common issues
+   - Handle network, authentication, and parsing errors gracefully
+
+3. **Testing**
+   - Support mock data mode via settings
+   - Include network testing functionality
+   - Handle offline scenarios gracefully
+
+4. **Security**
+   - Store credentials securely
+   - Use HTTPS for all requests
+   - Minimize sensitive data in logs 

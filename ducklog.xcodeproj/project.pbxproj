@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		A41324CC2DC52EDA004CA77D /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = A41324CB2DC52EDA004CA77D /* KeychainAccess */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		7A84513B2DB558FF0062AA09 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -79,6 +83,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A41324CC2DC52EDA004CA77D /* KeychainAccess in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -195,6 +200,7 @@
 			);
 			name = ducklog;
 			packageProductDependencies = (
+				A41324CB2DC52EDA004CA77D /* KeychainAccess */,
 			);
 			productName = ducklog;
 			productReference = A4BA7B2A2DA5FCB100C3E2A2 /* ducklog.app */;
@@ -235,6 +241,9 @@
 			);
 			mainGroup = A4BA7B212DA5FCB100C3E2A2;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				A41324CA2DC52EDA004CA77D /* XCRemoteSwiftPackageReference "KeychainAccess" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A4BA7B2B2DA5FCB100C3E2A2 /* Products */;
 			projectDirPath = "";
@@ -590,7 +599,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"ducklog/Preview Content\"";
-				DEVELOPMENT_TEAM = U33ZFLNE92;
+				DEVELOPMENT_TEAM = UYANG4Q76S;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -630,7 +639,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"ducklog/Preview Content\"";
-				DEVELOPMENT_TEAM = U33ZFLNE92;
+				DEVELOPMENT_TEAM = UYANG4Q76S;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -710,6 +719,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		A41324CA2DC52EDA004CA77D /* XCRemoteSwiftPackageReference "KeychainAccess" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kishikawakatsumi/KeychainAccess";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A41324CB2DC52EDA004CA77D /* KeychainAccess */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A41324CA2DC52EDA004CA77D /* XCRemoteSwiftPackageReference "KeychainAccess" */;
+			productName = KeychainAccess;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = A4BA7B222DA5FCB100C3E2A2 /* Project object */;
 }

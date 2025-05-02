@@ -1,5 +1,16 @@
 # Integration Plan
 
+## Jira Integration (Implemented)
+
+- Used for importing and linking Jira tickets into journal entries
+- Authentication via Basic Authentication with username and API token
+- Features:
+  - Ticket lookup by URL or ID
+  - Formatted entry creation with ticket details
+  - Network status testing
+  - Optional mock data mode for testing without network
+- Configuration in Settings view
+
 ## GitHub API (Planned)
 
 - Used for fetching pull requests, descriptions, and statuses

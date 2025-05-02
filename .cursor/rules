@@ -1,0 +1,94 @@
+# DuckLog Coding Rules and Conventions
+
+## Architecture and Design
+
+1. **Multiplatform Support**: 
+   - All code must be compatible with macOS, iPad, and iOS platforms
+   - Use conditional compilation for platform-specific features (#if os(macOS), #if os(iOS), etc.)
+   - Avoid APIs that are exclusive to one platform unless wrapped in platform checks
+   - NavigationSplitView should be used for main app navigation structure
+
+2. **UI Structure**:
+   - Follow the three-panel layout: SidebarNavigationView, EntryListView, DetailView
+   - Use Day One-inspired design for consistency
+   - EntryDetailView should have generous margins (128pt horizontal padding)
+   - Status colors: In Progress (Blue), Done (Green), Blocked (Red)
+
+3. **Naming Conventions**:
+   - View names should end with "View" (e.g., EntryListView, SettingsView)
+   - ViewModel names should end with "ViewModel" (e.g., JournalViewModel)
+   - Model names should be descriptive of the data they contain (e.g., JournalEntry)
+   - Service names should end with "Service" (e.g., JiraService)
+
+4. **SwiftData Usage**:
+   - Use SwiftData for all model persistence
+   - Models should have appropriate @Model attributes
+   - Define relationships explicitly
+   - Use descriptive property names that match the data model documentation
+
+## Jira Integration Guidelines
+
+1. **Authentication**:
+   - Use Basic Authentication with username and API token
+   - Never store passwords directly
+   - Always check network connectivity before making API calls
+
+2. **Entry Format**:
+   - Ticket entries should follow standard format with proper heading hierarchy
+   - Title as H1, metadata as H3, proper attribution at the bottom
+
+3. **Error Handling**:
+   - Provide clear error messages with troubleshooting tips
+   - Use async/await pattern for network requests
+   - Include network testing tools for diagnostics
+
+## Component Structure
+
+1. **Views**:
+   - Prefer composition over inheritance
+   - Use ViewBuilder and extract subviews for complex UI elements
+   - Support both light and dark mode
+   - Implement platform-specific variations using conditional code
+
+2. **ViewModels**:
+   - Follow MVVM pattern
+   - Use @Published for observable properties
+   - Keep business logic separate from views
+   - Handle async operations with proper state management
+
+3. **Models**:
+   - Keep models focused on data structure
+   - Use computed properties for derived values
+   - Implement proper Identifiable conformance
+
+## Markdown Support
+
+1. **Content Formatting**:
+   - All journal content should support Markdown syntax
+   - Render Markdown properly in view mode
+   - Support common formatting elements (headers, lists, code blocks, etc.)
+
+## Testing and Documentation
+
+1. **Code Documentation**:
+   - Use documentation comments for public APIs
+   - Include examples where appropriate
+   - Keep documentation up to date with code changes
+
+2. **Progress Tracking**:
+   - Update docs/development_plan.md after every feature addition or significant change
+   - Mark completed items with [x] or ☑️ in checkboxes
+
+## Development Workflow
+
+1. **Feature Implementation**:
+   - Start with designing the data model
+   - Implement the UI components
+   - Add business logic through ViewModels
+   - Connect to persistence layer
+   - Test across all target platforms
+
+2. **Settings Structure**:
+   - All app configurations should be accessible through SettingsView
+   - Use appropriate UI elements for different setting types
+   - Group related settings together 

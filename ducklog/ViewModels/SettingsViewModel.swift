@@ -7,9 +7,14 @@ class SettingsViewModel: ObservableObject {
     
     init() {
         settings = settingsService.loadSettings()
+        print("SettingsViewModel initialized with Jira URL: '\(settings.jiraInstanceURL)'")
+        print("SettingsViewModel initialized with Jira Username: '\(settings.jiraUsername)'")
     }
     
     func saveSettings() {
+        print("Saving settings: useMockJiraData = \(settings.useMockJiraData)")
+        print("Saving settings: jiraInstanceURL = '\(settings.jiraInstanceURL)'")
+        print("Saving settings: jiraUsername = '\(settings.jiraUsername)'")
         try? settingsService.saveSettings(settings)
     }
     
@@ -24,6 +29,11 @@ class SettingsViewModel: ObservableObject {
         } else {
             settings.templateSections.append(section)
         }
+        saveSettings()
+    }
+    
+    func updateJiraInstanceURL(_ url: String) {
+        settings.jiraInstanceURL = url
         saveSettings()
     }
 } 

@@ -21,21 +21,61 @@ enum SidebarSection: String, CaseIterable, Identifiable {
 
 struct ContentView: View {
     @StateObject private var viewModel = JournalViewModel()
+    @EnvironmentObject private var settingsViewModel: SettingsViewModel
     @Environment(\.modelContext) private var modelContext
     @State private var selectedSidebarSection: SidebarSection? = .allEntries
     @State private var showingCustomRange = false
     @State private var customStartDate = Date()
     @State private var customEndDate = Date()
+    @State private var showingNewEntry = false
+    @State private var showSettings = false
+    @Query(sort: \JournalEntry.timestamp, order: .reverse) private var entries: [JournalEntry]
+    
+    var filteredEntries: [JournalEntry] {
+        entries.filter { $0.timestamp >= viewModel.filter.startDate && $0.timestamp <= viewModel.filter.endDate }
+    }
     
     var body: some View {
         NavigationSplitView {
             // Sidebar
             List(SidebarSection.allCases, selection: $selectedSidebarSection) { section in
-                NavigationLink(value: section) {
+                if section == .settings {
                     Label(section.rawValue, systemImage: icon(for: section))
+                        .onTapGesture {
+                            showSettings = true
+                        }
+                } else {
+                    NavigationLink(value: section) {
+                        Label(section.rawValue, systemImage: icon(for: section))
+                    }
                 }
             }
             .listStyle(SidebarListStyle())
+            .navigationTitle("DuckLog")
+            .toolbar(id: "sidebarToolbar") {
+                ToolbarItem(id: "newEntry", placement: .primaryAction) {
+                    Button(action: {
+                        showingNewEntry = true
+                    }) {
+                        Image(systemName: "plus")
+                    }
+                }
+                
+                ToolbarItem(id: "settings", placement: .automatic) {
+                    Button(action: {
+                        showSettings = true
+                    }) {
+                        Image(systemName: "gear")
+                    }
+                }
+            }
+            .onChange(of: selectedSidebarSection) { oldValue, newValue in
+                if newValue == .settings {
+                    // Reset to previous selection and show settings as sheet instead
+                    selectedSidebarSection = oldValue
+                    showSettings = true
+                }
+            }
         } content: {
             // Entry List Panel
             switch selectedSidebarSection {
@@ -103,17 +143,14 @@ struct ContentView: View {
             case .trash:
                 TrashView(viewModel: viewModel)
             case .settings:
-                SettingsView()
+                // This case should never be reached due to our onChange handler
+                Text("Settings are available via the gear icon")
             case .none:
                 Text("Select a section")
             }
         } detail: {
             // Contextual Detail/Summary/Settings Panel
-            if selectedSidebarSection == .settings {
-                SettingsView()
-            } else {
-                EntryDetailView(entry: viewModel.selectedEntry, viewModel: viewModel)
-            }
+            EntryDetailView(entry: viewModel.selectedEntry, viewModel: viewModel)
         }
         .accentColor(.blue)
         .sheet(isPresented: $showingCustomRange) {
@@ -125,18 +162,30 @@ struct ContentView: View {
                 viewModel.filter = .customRange(customStartDate, customEndDate)
             }
         }
+        .sheet(isPresented: $showingNewEntry) {
+            NewEntryView(viewModel: viewModel)
+                .environmentObject(settingsViewModel)
+        }
+        .sheet(isPresented: $showSettings) {
+            #if os(macOS)
+            SettingsView()
+                .environmentObject(settingsViewModel)
+                .frame(width: 600, height: 500)
+            #else
+            NavigationStack {
+                SettingsView()
+                    .environmentObject(settingsViewModel)
+            }
+            #endif
+        }
         .onAppear {
             print("📱 ContentView appeared, loading entries")
             viewModel.loadEntries(modelContext: modelContext)
             viewModel.loadTags(modelContext: modelContext)
         }
-        .toolbar {
-            Button(action: {
-                viewModel.selectedEntry = nil
-            }) {
-                Image(systemName: "plus")
-            }
-        }
+        #if os(iOS)
+        .toolbarRole(.browser)
+        #endif
     }
     
     private func icon(for section: SidebarSection) -> String {
@@ -154,11 +203,28 @@ struct ContentView: View {
 struct TimelineEntryRow: View {
     let entry: JournalEntry
     
+    private var entryTitle: String {
+        // Extract the first line as the title
+        if let firstLine = entry.content.components(separatedBy: .newlines).first?.trimmingCharacters(in: .whitespaces),
+           !firstLine.isEmpty {
+            return firstLine
+        }
+        return "Untitled Entry"
+    }
+    
+    private var contentPreview: String {
+        let lines = entry.content.components(separatedBy: .newlines)
+        if lines.count > 1 {
+            return lines.dropFirst().joined(separator: " ").trimmingCharacters(in: .whitespaces)
+        }
+        return entry.content
+    }
+    
     var body: some View {
         VStack(alignment: .leading) {
-            Text(entry.content)
+            Text(entryTitle)
                 .font(.system(size: 18, weight: .bold))
-            Text(entry.content)
+            Text(contentPreview)
                 .font(.system(size: 16, weight: .regular))
                 .lineLimit(2)
             if let pr = entry.linkedPR {

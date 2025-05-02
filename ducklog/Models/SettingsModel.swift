@@ -4,6 +4,9 @@ struct SettingsModel: Codable {
     var templateSections: [String]
     var sectionOrder: [String]
     var summaryTemplateEnabled: Bool
+    var jiraInstanceURL: String
+    var jiraUsername: String
+    var useMockJiraData: Bool
     
     static let defaultSections = [
         "Achievements",
@@ -17,7 +20,10 @@ struct SettingsModel: Codable {
         SettingsModel(
             templateSections: defaultSections,
             sectionOrder: defaultSections,
-            summaryTemplateEnabled: true
+            summaryTemplateEnabled: true,
+            jiraInstanceURL: "",
+            jiraUsername: "",
+            useMockJiraData: false
         )
     }
 } 

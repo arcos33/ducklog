@@ -21,7 +21,6 @@ final class JournalEntry {
                 return [] 
             }
             if let decodedTags = try? JSONDecoder().decode([String].self, from: data) {
-                print("📦 Decoded tags: \(decodedTags)")
                 return decodedTags
             } else {
                 print("❌ Failed to decode tags from data")

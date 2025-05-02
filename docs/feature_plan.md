@@ -23,6 +23,11 @@
   - Template structure defines summary view layout
 - **Search Bar**: For quick entry lookup
 - **Adaptive Layout**: Uses SwiftUI NavigationSplitView for multiplatform support (macOS, iPad, iOS)
+- **Jira Integration**: Import Jira tickets directly into journal entries
+  - Lookup by URL or ticket ID
+  - Formatted entries with ticket details
+  - Network testing capabilities
+  - Mock data mode for offline testing
 
 ## Planned Features
 
@@ -39,6 +44,7 @@
 - Central place for configuring global app behavior
 - Includes:
   - Summary Template layout customization
+  - Jira integration configuration
   - (Future) AI settings
   - (Future) Default tags or GitHub preferences
 - Accessible via the app's top menu: `DuckLog > Settings`

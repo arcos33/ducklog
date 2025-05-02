@@ -38,8 +38,9 @@
 - [x] Design Weekly Summary view (grouped by day or section as needed)
 
 ## 6. Settings & Customization
-- [ ] Implement SettingsView _(in progress)_
+- [x] Implement SettingsView
   - [x] Add summary template customization (sections, order)
+  - [x] Jira integration settings
   - [ ] Preferences (future: AI, GitHub, etc.)
 
 ## 7. Trash & Deletion
@@ -58,6 +59,12 @@
 - [x] Entry list selection highlight (full-width, no rounded corners)
     - Switched from List to ScrollView + LazyVStack for full control over row backgrounds and spacing. This resolved the issue with system-imposed margins and ensures the selection highlight fills the entire width.
 - [x] Card-style entry list UI (optional, can be further polished)
+- [x] Jira integration
+  - [x] Basic authentication with email/token
+  - [x] Ticket lookup by URL or ID
+  - [x] Entry creation from tickets
+  - [x] Network testing tools
+  - [x] Mock data mode for offline testing
 - [ ] Media attachments (future)
 - [ ] Multiple journals (future)
 - [ ] Calendar/Map view (future)
@@ -71,6 +78,7 @@
 
 ## 10. Testing & Documentation
 - [ ] Write unit/UI tests for core features
-- [ ] Update documentation as features are implemented
+- [x] Update documentation as features are implemented
     - Documented the UI change for entry list selection highlight (edge-to-edge) and the architectural switch to ScrollView + LazyVStack.
+    - Added comprehensive documentation for Jira integration including flow diagrams and technical details.
 - [ ] Prepare for App Store/TestFlight submission 
