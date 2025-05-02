@@ -1,22 +1,18 @@
 //
-//  ducklogApp.swift
-//  ducklog
+//  iosApp.swift
+//  ios
 //
-//  Created by Joal.Arcos on 4/8/25.
+//  Created by arkos33 on 4/20/25.
 //
 
 import SwiftUI
 import SwiftData
 
 @main
-struct ducklogApp: App {
+struct iosApp: App {
     var sharedModelContainer: ModelContainer = {
-
         let schema = Schema([
-            JournalEntry.self,
-            PullRequest.self,
-            LogEntry.self,
-            Tag.self
+            Item.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 

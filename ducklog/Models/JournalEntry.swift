@@ -11,7 +11,6 @@ enum EntryStatus: String, Codable, CaseIterable, Identifiable {
 
 @Model
 final class JournalEntry {
-    var title: String
     var content: String
     private var _tags: String?
     var tags: [String] {
@@ -42,20 +41,21 @@ final class JournalEntry {
     var status: EntryStatus
     var timestamp: Date
     var linkedPR: PullRequest?
+    var isTrashed: Bool
     
     init(
-        title: String = "",
         content: String = "",
         tags: [String] = [],
         status: EntryStatus = .inProgress,
         timestamp: Date = .now,
-        linkedPR: PullRequest? = nil
+        linkedPR: PullRequest? = nil,
+        isTrashed: Bool = false
     ) {
-        self.title = title
         self.content = content
         self.status = status
         self.timestamp = timestamp
         self.linkedPR = linkedPR
+        self.isTrashed = isTrashed
         
         // Initialize _tags after all other properties
         if let data = try? JSONEncoder().encode(tags) {

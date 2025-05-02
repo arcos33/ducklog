@@ -15,8 +15,12 @@ struct HomeView: View {
                     Label("Logs", systemImage: "list.bullet")
                 }
                 
-                NavigationLink(destination: WeeklyOverviewView(viewModel: viewModel)) {
-                    Label("Weekly Overview", systemImage: "chart.bar")
+                NavigationLink(destination: TimelineView(viewModel: viewModel)) {
+                    Label("Timeline", systemImage: "chart.bar")
+                }
+                
+                NavigationLink(destination: TrashView(viewModel: viewModel)) {
+                    Label("Trash", systemImage: "trash")
                 }
                 
                 NavigationLink(destination: SettingsView()) {

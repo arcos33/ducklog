@@ -5,35 +5,37 @@ struct NewEntryView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     
-    @State private var title = ""
+    @ObservedObject var viewModel: JournalViewModel
     @State private var content = ""
     @State private var selectedTags: Set<String> = []
     @State private var selectedPR: PullRequest?
     @State private var status: EntryStatus = .inProgress
     
-    let availableTags = ["Code Review", "Blockers", "Achievements", "Personal"]
-    
     var body: some View {
         NavigationStack {
             Form {
                 Section {
-                    TextField("Title", text: $title)
                     TextEditor(text: $content)
                         .frame(height: 100)
                 }
                 
                 Section("Tags") {
-                    ForEach(availableTags, id: \.self) { tag in
-                        Toggle(tag, isOn: Binding(
-                            get: { selectedTags.contains(tag) },
-                            set: { isSelected in
-                                if isSelected {
-                                    selectedTags.insert(tag)
-                                } else {
-                                    selectedTags.remove(tag)
+                    if viewModel.allTags.isEmpty {
+                        Text("No tags available. Add tags in Tag Management.")
+                            .foregroundColor(.secondary)
+                    } else {
+                        ForEach(viewModel.allTags, id: \.self) { tag in
+                            Toggle(tag, isOn: Binding(
+                                get: { selectedTags.contains(tag) },
+                                set: { isSelected in
+                                    if isSelected {
+                                        selectedTags.insert(tag)
+                                    } else {
+                                        selectedTags.remove(tag)
+                                    }
                                 }
-                            }
-                        ))
+                            ))
+                        }
                     }
                 }
                 
@@ -60,19 +62,12 @@ struct NewEntryView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
                         print("💾 Creating new entry with model context: \(modelContext)")
-                        let entry = JournalEntry(
-                            title: title,
+                        viewModel.addEntry(
                             content: content,
                             tags: Array(selectedTags),
-                            status: status
+                            status: status,
+                            modelContext: modelContext
                         )
-                        modelContext.insert(entry)
-                        do {
-                            try modelContext.save()
-                            print("✅ Entry saved successfully")
-                        } catch {
-                            print("❌ Error saving entry: \(error)")
-                        }
                         dismiss()
                     }
                 }
@@ -83,6 +78,6 @@ struct NewEntryView: View {
 }
 
 #Preview {
-    NewEntryView()
+    NewEntryView(viewModel: JournalViewModel())
         .modelContainer(for: JournalEntry.self, inMemory: true)
 } 

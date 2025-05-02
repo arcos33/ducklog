@@ -22,13 +22,18 @@ struct JournalView: View {
                         showingCustomRange = true
                     }
                     .buttonStyle(.bordered)
+                    
+                    Button("Show All") {
+                        viewModel.filter = .allTime
+                    }
+                    .buttonStyle(.bordered)
                 }
                 .padding()
                 
                 List(viewModel.filteredEntries) { entry in
-                    NavigationLink(destination: EntryDetailView(entry: entry)) {
-                        VStack(alignment: .leading) {
-                            Text(entry.title)
+                    NavigationLink(destination: EntryDetailView(entry: entry, viewModel: viewModel)) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(entry.content)
                                 .font(.headline)
                             Text(entry.content)
                                 .font(.subheadline)
@@ -46,6 +51,7 @@ struct JournalView: View {
                                 .font(.caption)
                                 .foregroundColor(.gray)
                         }
+                        .padding(.vertical, 4)
                     }
                 }
             }
@@ -153,7 +159,6 @@ struct AddEntryView: View {
                     Button("Save") {
                         print("💾 Saving new entry with model context: \(modelContext)")
                         viewModel.addEntry(
-                            title: title,
                             content: content,
                             tags: tags,
                             status: .inProgress,

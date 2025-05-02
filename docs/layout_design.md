@@ -2,56 +2,140 @@
 
 ## Overview
 
-DuckLog is envisioned with a clean and intuitive 3-column layout, optimized for macOS and future iPad support. The layout allows for quick navigation, focused journaling, and clear review of past activity.
+DuckLog is designed as a multiplatform journaling app (macOS, iPad, iOS), with its primary design inspiration drawn from the Day One journal macOS app. The interface focuses on clarity, ease of navigation, and a modern, native feel across all Apple platforms.
 
 ---
 
-## Column Breakdown
+## Main Layout Structure (Day One-Inspired)
 
-### 📅 Column 1: Timeline / Date Selector
-- Displays buttons like:
-  - "This Week"
-  - "Last Week"
-  - "Two Weeks"
-  - "Custom Range"
-- May evolve into a calendar picker or heatmap view
-- Filters entries by selected time period
-- Shows entry previews with title, content, and metadata
-
-### 📝 Column 2: Entry List
-- Shows journal entries for the selected time period
-- Displays a list of:
-  - Entry titles
-  - Content previews
-  - Status indicators
+### 1. Sidebar Navigation
+- Located on the left, always visible on macOS, collapsible on iPad/iOS
+- Provides access to:
+  - All Entries
   - Tags
-  - Linked PRs
-  - Timestamps
-- Clicking an item loads the full entry in Column 3
+  - Media
+  - Journals
+  - Trash
+  - Settings
+- Uses icons and text for clear navigation
 
-### 🔍 Column 3: Summary View
-- Displays entries organized by template sections
-- Each section shows:
-  - Section title in bold
-  - Relevant entries based on tags
-  - Entry content and linked PRs
-- Automatically updates based on selected time period
-- Scrollable view with consistent spacing
-- Indented entries under section headers
+### 2. Entry List Pane
+- Displays a chronological list of journal entries
+- Groups entries by month and year
+- Shows for each entry:
+  - Title (first line of content)
+  - Preview of content
+  - Time
+  - Status indicator (color-coded)
+  - Tags (if any)
+- Supports search and filtering
+- Date-based navigation (This Week, Custom Range, Show All)
+
+### 3. Entry Detail Pane
+- Document-style layout with generous margins (128pt horizontal padding)
+- Three distinct sections:
+  1. **Header**
+     - Date and time (Month D, YYYY format)
+     - Day of week and time
+     - Status indicator
+     - Edit/Done button
+  2. **Content Area**
+     - Full-height scrollable content
+     - Markdown rendering in view mode
+     - Text editor in edit mode
+     - Top-aligned with proper spacing
+  3. **Bottom Controls** (in edit mode)
+     - Status selector with visual indicators
+     - Tag selection interface
+     - Save/Cancel actions for new entries
 
 ---
 
-## Additional UX Notes
+## ASCII Diagram
 
-- Clicking the **Floating + Button** opens a Popover for quick entry creation
-- The layout should be **adaptive**, collapsing columns when space is limited
-- Summary View uses settings from SettingsView to determine visible sections
-- Consistent typography and spacing throughout the app
+```
++----------------+--------------------------+--------------------------------+
+|   SIDEBAR      |      ENTRY LIST         |        ENTRY DETAIL            |
+|----------------|--------------------------|--------------------------------|
+| - All Entries  | May 2025                | May 1, 2025                    |
+| - Tags         |   THU 1                 | Thursday, 9:26 PM              |
+| - Media        |   - Meeting notes       | [In Progress]                  |
+| - Journals     |   - Testing markdown    |                                |
+| - Trash        |   - Another entry       | # Meeting with backend team    |
+| - Settings     |                         | - discussed things             |
+|                | April 2025              | - **YELLED** at customer...    |
+|                |   SUN 27                |                                |
+|                |   - My new entry        | `thebest.swift`               |
+|                |                         |                                |
+|                |                         | [Status & Tags Controls]        |
++----------------+--------------------------+--------------------------------+
+```
 
 ---
 
-## macOS vs iPad Considerations
+## Design Elements
 
-- macOS: Uses full 3-column layout side-by-side
-- iPad (future): Might use sidebar navigation or stacked layout depending on screen size and orientation
-- Leverage SwiftUI's `NavigationSplitView` for clean and adaptive transitions 
+### Typography
+- System fonts for native feel
+- Clear hierarchy:
+  - Title: `.title2`
+  - Subtitle: `.subheadline`
+  - Content: `.body`
+  - Controls: `.caption`
+
+### Colors
+- Platform-specific background colors
+- Status colors:
+  - In Progress: Blue
+  - Done: Green
+  - Blocked: Red
+- Proper contrast and opacity for status indicators
+
+### Spacing
+- Generous horizontal padding (128pt) for optimal reading
+- Consistent vertical spacing
+- Clear section separation
+
+---
+
+## Multiplatform Considerations
+
+### macOS
+- Three-column layout always visible
+- Native window background colors
+- Keyboard shortcuts
+- Mouse-optimized controls
+
+### iPad
+- Adaptive three-column layout
+- Collapsible sidebar
+- Touch-optimized controls
+- Split view support
+
+### iOS
+- Stack navigation
+- Modal presentation for detail view
+- Bottom sheet for quick entry
+- Touch-optimized interface
+
+---
+
+## Implementation Notes
+
+### SwiftUI Components
+- `NavigationSplitView` for main layout
+- `ScrollView` with `GeometryReader` for content
+- Platform-specific color adaptations
+- Markdown rendering support
+
+### State Management
+- Entry selection
+- Edit mode handling
+- Content updates
+- Status and tag management
+
+### Future Considerations
+- Media attachment support
+- Location and weather integration
+- Multiple journal support
+- Extended markdown capabilities 

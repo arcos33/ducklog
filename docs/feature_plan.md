@@ -1,8 +1,11 @@
 # Feature Plan
 
-## Core Features
+## Core Features (Day One-Inspired)
 
-- **Floating Plus Button**: Launches a popover window for quick journal entry creation.
+- **Sidebar Navigation**: Persistent sidebar for navigation (journals, tags, media, settings)
+- **Entry List Pane**: Chronological list of entries for the selected context (journal, tag, etc.)
+- **Entry Detail/Editor Pane**: Full view and editing of the selected entry, with metadata and PR links
+- **Floating Plus Button**: Quick entry creation via modal or sheet
 - **Popover Entry Interface**:
   - Text field for journaling
   - Tag selection (e.g., "Code Review", "Bug Fix")
@@ -16,16 +19,20 @@
     - Personal (e.g., Medical, Vacation, PTO)
     - Feedback/Ideas
     - Team Collaboration
-  - The selected template structure will define the layout of the **summary view**
   - Sections may be reordered via drag-and-drop
-  - Future-friendly: backend structure allows for adding support for multiple templates later
-- **Timeline / Calendar View**:
-  - Buttons to filter entries by timeframe ("Last Week", "Two Weeks", "Three Weeks")
-  - Helps with weekly reviews and one-on-ones
+  - Template structure defines summary view layout
 - **Search Bar**: For quick entry lookup
-- **AI Summaries (Planned)**:
-  - Generates summaries based on tags and selected entry template
-  - Useful for one-on-one meetings or weekly wrap-ups
+- **Adaptive Layout**: Uses SwiftUI NavigationSplitView for multiplatform support (macOS, iPad, iOS)
+
+## Planned Features
+
+- **Media Attachments**: Add images, files, or audio to entries
+- **Calendar View**: Browse entries by date (calendar picker or timeline)
+- **Multiple Journals**: Support for organizing entries into separate journals
+- **AI Summaries**: Generates summaries based on tags and selected entry template (for meetings, reviews)
+- **Map View**: (Future) Browse entries by location
+- **Enhanced Multiplatform Support**: Consistent experience across macOS, iPad, and iOS
+- **GitHub API Integration**: Fetch PR information, descriptions, and statuses
 
 ## Settings View
 
@@ -38,5 +45,6 @@
 
 ## Notes
 
+- All features are designed with multiplatform support in mind (macOS, iPad, iOS)
 - The template layout is currently a single global structure per user
-- Future versions may support multiple layouts
+- Future versions may support multiple layouts and advanced customization
